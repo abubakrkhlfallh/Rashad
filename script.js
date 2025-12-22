@@ -1,8 +1,11 @@
-// script.js - الملف الرئيسي لجافاسكريبت لموقع رشّاد
+// script.js - الملف الرئيسي مع تكامل Supabase
 
 // DOM Ready
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize all components
+document.addEventListener('DOMContentLoaded', async function() {
+    // تحميل Supabase SDK
+    await loadSupabaseSDK();
+    
+    // تهيئة المكونات
     initMobileMenu();
     initForms();
     initModals();
@@ -10,631 +13,219 @@ document.addEventListener('DOMContentLoaded', function() {
     initFilters();
     initCharts();
     
-    // Load user data if available
-    loadUserData();
+    // تحميل البيانات حسب الصفحة
+    loadPageData();
     
-    // Set current year in footer
+    // تعيين السنة الحالية في التذييل
     setCurrentYear();
 });
 
-// Mobile Menu Toggle
-function initMobileMenu() {
-    const toggler = document.querySelector('.navbar-toggler');
-    const menu = document.querySelector('.navbar-menu');
+// تحميل Supabase SDK
+async function loadSupabaseSDK() {
+    if (typeof supabase === 'undefined') {
+        await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2');
+    }
     
-    if (toggler && menu) {
-        toggler.addEventListener('click', function() {
-            menu.classList.toggle('show');
-        });
-        
-        // Close menu when clicking outside
-        document.addEventListener('click', function(event) {
-            if (!toggler.contains(event.target) && !menu.contains(event.target)) {
-                menu.classList.remove('show');
-            }
-        });
+    // تحميل ملف التكوين
+    await loadScript('supabase-config.js');
+    
+    // تحميل مدير المصادقة
+    await loadScript('auth-manager.js');
+}
+
+function loadScript(src) {
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+    });
+}
+
+// تحميل بيانات الصفحة حسب نوع الصفحة
+async function loadPageData() {
+    const page = window.location.pathname.split('/').pop();
+    
+    switch (page) {
+        case 'index.html':
+            await loadHomePageData();
+            break;
+        case 'marketplace.html':
+            await loadMarketplaceData();
+            break;
+        case 'farmer-dashboard.html':
+            await loadFarmerDashboardData();
+            break;
+        case 'supplier-dashboard.html':
+            await loadSupplierDashboardData();
+            break;
+        case 'trader-dashboard.html':
+            await loadTraderDashboardData();
+            break;
+        case 'expert-consultation.html':
+            await loadExpertsData();
+            break;
     }
 }
 
-// Form Validation and Handling
-function initForms() {
-    // Login form
+// تحميل بيانات الصفحة الرئيسية
+async function loadHomePageData() {
+    try {
+        // تحميل آخر المنتجات
+        const productsResult = await window.supabaseFunctions.getProducts({ limit: 4 });
+        
+        if (productsResult.success && productsResult.data.length > 0) {
+            displayFeaturedProducts(productsResult.data);
+        }
+        
+        // تحميل عدد المستخدمين (في تطبيق حقيقي، هذه ستكون استعلامًا منفصلاً)
+        updateUserCounts();
+    } catch (error) {
+        console.error('Error loading home page data:', error);
+    }
+}
+
+// تحميل بيانات السوق
+async function loadMarketplaceData() {
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const filters = {
+            product_type: urlParams.get('type'),
+            category: urlParams.get('category'),
+            state: urlParams.get('state'),
+            min_price: urlParams.get('min_price'),
+            max_price: urlParams.get('max_price')
+        };
+        
+        const result = await window.supabaseFunctions.getProducts(filters);
+        
+        if (result.success) {
+            displayProducts(result.data);
+        } else {
+            showError('حدث خطأ في تحميل المنتجات');
+        }
+    } catch (error) {
+        console.error('Error loading marketplace data:', error);
+        showError('حدث خطأ في تحميل البيانات');
+    }
+}
+
+// تحميل بيانات لوحة تحكم المزارع
+async function loadFarmerDashboardData() {
+    try {
+        if (!window.authManager.isAuthenticated()) {
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        const user = window.authManager.getProfile();
+        
+        if (user.user_type !== 'farmer') {
+            window.location.href = 'index.html';
+            return;
+        }
+        
+        // تحميل الإحصائيات
+        const statsResult = await window.supabaseFunctions.getDashboardStats(user.id, 'farmer');
+        
+        if (statsResult.success) {
+            updateDashboardStats(statsResult.data);
+        }
+        
+        // تحميل الخطط الزراعية
+        const plansResult = await window.supabaseFunctions.getFarmerPlans(user.id);
+        
+        if (plansResult.success && plansResult.data.length > 0) {
+            displayFarmingPlans(plansResult.data);
+        }
+        
+        // تحميل بيانات الطقس
+        const weatherResult = await window.supabaseFunctions.getWeatherData(user.state, '');
+        
+        if (weatherResult.success) {
+            displayWeatherData(weatherResult.data);
+        }
+        
+        // تحميل الطلبات الأخيرة
+        const ordersResult = await window.supabaseFunctions.getUserOrders(user.id, 'seller');
+        
+        if (ordersResult.success) {
+            displayRecentOrders(ordersResult.data);
+        }
+        
+    } catch (error) {
+        console.error('Error loading farmer dashboard data:', error);
+    }
+}
+
+// تحديث ملفات HTML مع وظائف التكامل:
+
+## 4. تحديث `login.html`:
+
+```html
+<!-- إضافة قبل </body> -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="auth-manager.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async function() {
+    // التحقق مما إذا كان المستخدم مسجلاً بالفعل
+    await window.authManager.checkAuthState();
+    
+    // التعامل مع نموذج تسجيل الدخول
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
-        loginForm.addEventListener('submit', function(e) {
+        loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            handleLogin(this);
-        });
-    }
-    
-    // Registration form
-    const registerForm = document.getElementById('registerForm');
-    if (registerForm) {
-        registerForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            handleRegistration(this);
-        });
-    }
-    
-    // Booking form
-    const bookingForm = document.getElementById('bookingForm');
-    if (bookingForm) {
-        bookingForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            handleBooking(this);
-        });
-    }
-}
-
-// Modal Handling
-function initModals() {
-    // Close modals when clicking outside
-    document.addEventListener('click', function(event) {
-        if (event.target.classList.contains('modal')) {
-            event.target.style.display = 'none';
-        }
-    });
-    
-    // Close modals with close buttons
-    document.querySelectorAll('.modal-close, .close-modal').forEach(btn => {
-        btn.addEventListener('click', function() {
-            this.closest('.modal').style.display = 'none';
-        });
-    });
-    
-    // Escape key to close modals
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            document.querySelectorAll('.modal').forEach(modal => {
-                modal.style.display = 'none';
-            });
-        }
-    });
-}
-
-// Tab Switching
-function initTabs() {
-    const tabContainers = document.querySelectorAll('.tabs');
-    
-    tabContainers.forEach(container => {
-        const tabs = container.querySelectorAll('.tab');
-        const tabPanes = container.querySelectorAll('.tab-pane');
-        
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                const tabId = this.getAttribute('data-tab');
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const userType = document.getElementById('userType').value;
+            
+            if (!email || !password || !userType) {
+                showError('يرجى ملء جميع الحقول المطلوبة');
+                return;
+            }
+            
+            // عرض حالة التحميل
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تسجيل الدخول...';
+            submitBtn.disabled = true;
+            
+            try {
+                const result = await window.authManager.login(email, password);
                 
-                // Update active tab
-                tabs.forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Show active tab pane
-                tabPanes.forEach(pane => {
-                    pane.classList.remove('active');
-                    if (pane.getAttribute('data-pane') === tabId) {
-                        pane.classList.add('active');
-                    }
-                });
-            });
-        });
-    });
-}
-
-// Filter Functionality
-function initFilters() {
-    const filterForms = document.querySelectorAll('.filter-form');
-    
-    filterForms.forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            applyFilters(this);
-        });
-        
-        // Clear filters
-        const clearBtn = form.querySelector('.clear-filters');
-        if (clearBtn) {
-            clearBtn.addEventListener('click', function() {
-                clearFilters(form);
-            });
-        }
-    });
-}
-
-// Chart Initialization
-function initCharts() {
-    // Check if Chart.js is loaded
-    if (typeof Chart === 'undefined') return;
-    
-    // Production chart
-    const productionCtx = document.getElementById('productionChart');
-    if (productionCtx) {
-        new Chart(productionCtx, {
-            type: 'line',
-            data: {
-                labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'],
-                datasets: [{
-                    label: 'الإنتاجية (طن)',
-                    data: [12, 15, 18, 14, 20, 22],
-                    borderColor: '#2e7d32',
-                    backgroundColor: 'rgba(46, 125, 50, 0.1)',
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        rtl: true
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'الإنتاجية بالطن'
-                        }
-                    }
+                if (result.success) {
+                    showSuccess('تم تسجيل الدخول بنجاح');
+                    
+                    // سيتم التوجيه تلقائياً بواسطة authManager
+                } else {
+                    showError(result.error || 'خطأ في تسجيل الدخول');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
                 }
+            } catch (error) {
+                showError('حدث خطأ غير متوقع');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
             }
         });
     }
-    
-    // Revenue chart
-    const revenueCtx = document.getElementById('revenueChart');
-    if (revenueCtx) {
-        new Chart(revenueCtx, {
-            type: 'bar',
-            data: {
-                labels: ['قمح', 'ذرة', 'فول سوداني', 'سمسم'],
-                datasets: [{
-                    label: 'الإيرادات (ألف جنيه)',
-                    data: [150, 120, 200, 180],
-                    backgroundColor: [
-                        'rgba(46, 125, 50, 0.7)',
-                        'rgba(76, 175, 80, 0.7)',
-                        'rgba(255, 152, 0, 0.7)',
-                        'rgba(33, 150, 243, 0.7)'
-                    ],
-                    borderColor: [
-                        '#2e7d32',
-                        '#4caf50',
-                        '#ff9800',
-                        '#2196f3'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        rtl: true
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'الإيرادات بألف جنيه'
-                        }
-                    }
-                }
-            }
-        });
-    }
+});
+
+function showError(message) {
+    const errorDiv = document.getElementById('errorMessage');
+    errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+    errorDiv.style.display = 'block';
+    document.getElementById('successMessage').style.display = 'none';
 }
 
-// Load User Data
-function loadUserData() {
-    const userData = JSON.parse(localStorage.getItem('rashadUser'));
-    
-    if (userData) {
-        // Update user avatar in header
-        const userAvatarElements = document.querySelectorAll('.user-avatar, .navbar-avatar');
-        userAvatarElements.forEach(el => {
-            if (el.textContent.trim() === '') {
-                el.textContent = userData.firstName.charAt(0);
-            }
-        });
-        
-        // Update user name
-        const userNameElements = document.querySelectorAll('.user-name');
-        userNameElements.forEach(el => {
-            if (el.textContent.trim() === '') {
-                el.textContent = `${userData.firstName} ${userData.lastName}`;
-            }
-        });
-        
-        // Update user type
-        const userTypeElements = document.querySelectorAll('.user-type');
-        userTypeElements.forEach(el => {
-            if (el.textContent.trim() === '') {
-                const userTypeMap = {
-                    'farmer': 'مزارع',
-                    'supplier': 'مورد',
-                    'trader': 'تاجر',
-                    'expert': 'خبير'
-                };
-                el.textContent = userTypeMap[userData.userType] || userData.userType;
-            }
-        });
-        
-        // Update user location
-        const userLocationElements = document.querySelectorAll('.user-location');
-        userLocationElements.forEach(el => {
-            if (el.textContent.trim() === '') {
-                el.textContent = userData.state;
-            }
-        });
-    }
+function showSuccess(message) {
+    const successDiv = document.getElementById('successMessage');
+    successDiv.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+    successDiv.style.display = 'block';
+    document.getElementById('errorMessage').style.display = 'none';
 }
-
-// Handle Login
-async function handleLogin(form) {
-    const email = form.querySelector('#email').value;
-    const password = form.querySelector('#password').value;
-    const userType = form.querySelector('#userType').value;
-    
-    // Basic validation
-    if (!email || !password || !userType) {
-        showAlert('يرجى ملء جميع الحقول المطلوبة', 'error');
-        return;
-    }
-    
-    // Show loading
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const originalText = submitBtn.textContent;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تسجيل الدخول...';
-    submitBtn.disabled = true;
-    
-    try {
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // In a real app, you would make an API call to Supabase
-        // const { data, error } = await supabase.auth.signInWithPassword({
-        //     email: email,
-        //     password: password
-        // });
-        
-        // For demo purposes, we'll simulate a successful login
-        const userData = {
-            email,
-            userType,
-            firstName: 'محمد',
-            lastName: 'أحمد',
-            state: 'الجزيرة'
-        };
-        
-        localStorage.setItem('rashadUser', JSON.stringify(userData));
-        
-        showAlert('تم تسجيل الدخول بنجاح', 'success');
-        
-        // Redirect based on user type
-        setTimeout(() => {
-            switch(userType) {
-                case 'farmer':
-                    window.location.href = 'farmer-dashboard.html';
-                    break;
-                case 'supplier':
-                    window.location.href = 'supplier-dashboard.html';
-                    break;
-                case 'trader':
-                    window.location.href = 'trader-dashboard.html';
-                    break;
-                default:
-                    window.location.href = 'index.html';
-            }
-        }, 1000);
-        
-    } catch (error) {
-        showAlert('خطأ في تسجيل الدخول. يرجى التحقق من البيانات والمحاولة مرة أخرى', 'error');
-    } finally {
-        // Restore button
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-    }
-}
-
-// Handle Registration
-async function handleRegistration(form) {
-    const firstName = form.querySelector('#firstName').value;
-    const lastName = form.querySelector('#lastName').value;
-    const email = form.querySelector('#email').value;
-    const phone = form.querySelector('#phone').value;
-    const state = form.querySelector('#state').value;
-    const password = form.querySelector('#password').value;
-    const confirmPassword = form.querySelector('#confirmPassword').value;
-    const userType = form.querySelector('#userType').value;
-    const terms = form.querySelector('#terms').checked;
-    
-    // Validation
-    if (!firstName || !lastName || !email || !phone || !state || !password || !confirmPassword || !userType) {
-        showAlert('يرجى ملء جميع الحقول المطلوبة', 'error');
-        return;
-    }
-    
-    if (!terms) {
-        showAlert('يجب الموافقة على شروط الخدمة وسياسة الخصوصية', 'error');
-        return;
-    }
-    
-    if (password !== confirmPassword) {
-        showAlert('كلمات المرور غير متطابقة', 'error');
-        return;
-    }
-    
-    if (password.length < 6) {
-        showAlert('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
-        return;
-    }
-    
-    // Show loading
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const originalText = submitBtn.textContent;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري إنشاء الحساب...';
-    submitBtn.disabled = true;
-    
-    try {
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // In a real app, you would make an API call to Supabase
-        // const { data, error } = await supabase.auth.signUp({
-        //     email: email,
-        //     password: password,
-        //     options: {
-        //         data: {
-        //             first_name: firstName,
-        //             last_name: lastName,
-        //             phone: phone,
-        //             state: state,
-        //             user_type: userType
-        //         }
-        //     }
-        // });
-        
-        // For demo purposes, we'll simulate a successful registration
-        const userData = {
-            firstName,
-            lastName,
-            email,
-            phone,
-            state,
-            userType,
-            registeredAt: new Date().toISOString()
-        };
-        
-        localStorage.setItem('rashadUser', JSON.stringify(userData));
-        
-        showAlert('تم إنشاء الحساب بنجاح', 'success');
-        
-        // Redirect based on user type
-        setTimeout(() => {
-            switch(userType) {
-                case 'farmer':
-                    window.location.href = 'farmer-dashboard.html';
-                    break;
-                case 'supplier':
-                    window.location.href = 'supplier-dashboard.html';
-                    break;
-                case 'trader':
-                    window.location.href = 'trader-dashboard.html';
-                    break;
-                default:
-                    window.location.href = 'index.html';
-            }
-        }, 1500);
-        
-    } catch (error) {
-        showAlert('حدث خطأ أثناء إنشاء الحساب. يرجى المحاولة مرة أخرى', 'error');
-    } finally {
-        // Restore button
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-    }
-}
-
-// Handle Booking
-async function handleBooking(form) {
-    const consultationType = form.querySelector('#consultationType').value;
-    const consultationDate = form.querySelector('#consultationDate').value;
-    const consultationTime = form.querySelector('#consultationTime').value;
-    const consultationDuration = form.querySelector('#consultationDuration').value;
-    const consultationNotes = form.querySelector('#consultationNotes').value;
-    const expertName = form.querySelector('#bookingExpertName').textContent;
-    
-    // Validation
-    if (!consultationType || !consultationDate || !consultationTime || !consultationDuration) {
-        showAlert('يرجى ملء جميع الحقول المطلوبة', 'error');
-        return;
-    }
-    
-    // Show loading
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const originalText = submitBtn.textContent;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تأكيد الحجز...';
-    submitBtn.disabled = true;
-    
-    try {
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // Format date
-        const dateObj = new Date(consultationDate);
-        const formattedDate = dateObj.toLocaleDateString('ar-SA', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-        
-        // Show success message
-        showAlert(`تم حجز استشارة بنجاح!\n\nالتفاصيل:\n- الخبير: ${expertName}\n- النوع: ${consultationType}\n- التاريخ: ${formattedDate}\n- الوقت: ${consultationTime}\n- المدة: ${consultationDuration} دقيقة\n\nستتلقى رسالة تأكيد على بريدك الإلكتروني ورقم هاتفك.`, 'success');
-        
-        // Close modal
-        const modal = form.closest('.modal');
-        if (modal) {
-            modal.style.display = 'none';
-        }
-        
-        // Reset form
-        form.reset();
-        
-        // Reset date to tomorrow
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const dateInput = form.querySelector('#consultationDate');
-        if (dateInput) {
-            dateInput.value = tomorrow.toISOString().split('T')[0];
-        }
-        
-    } catch (error) {
-        showAlert('حدث خطأ أثناء تأكيد الحجز. يرجى المحاولة مرة أخرى', 'error');
-    } finally {
-        // Restore button
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-    }
-}
-
-// Apply Filters
-function applyFilters(form) {
-    const formData = new FormData(form);
-    const filters = {};
-    
-    for (const [key, value] of formData.entries()) {
-        if (value) {
-            filters[key] = value;
-        }
-    }
-    
-    // In a real app, you would make an API call with filters
-    console.log('Applying filters:', filters);
-    
-    // Show loading
-    const container = document.querySelector('.products-grid') || document.querySelector('.experts-grid');
-    if (container) {
-        container.innerHTML = '<div class="loading">جاري تطبيق الفلاتر...</div>';
-        
-        // Simulate API call delay
-        setTimeout(() => {
-            // Reload data (in a real app, this would be filtered data from API)
-            if (container.classList.contains('products-grid')) {
-                loadProducts('crops');
-            } else if (container.classList.contains('experts-grid')) {
-                loadExperts();
-            }
-        }, 1000);
-    }
-}
-
-// Clear Filters
-function clearFilters(form) {
-    form.reset();
-    applyFilters(form);
-}
-
-// Show Alert
-function showAlert(message, type = 'info') {
-    // Remove existing alerts
-    const existingAlerts = document.querySelectorAll('.alert');
-    existingAlerts.forEach(alert => alert.remove());
-    
-    // Create alert element
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type} fade-in`;
-    alertDiv.textContent = message;
-    
-    // Add to page
-    const container = document.querySelector('.container') || document.body;
-    container.insertBefore(alertDiv, container.firstChild);
-    
-    // Auto-remove after 5 seconds
-    setTimeout(() => {
-        alertDiv.remove();
-    }, 5000);
-}
-
-// Set Current Year in Footer
-function setCurrentYear() {
-    const yearElements = document.querySelectorAll('.current-year');
-    const currentYear = new Date().getFullYear();
-    
-    yearElements.forEach(el => {
-        el.textContent = currentYear;
-    });
-}
-
-// Open Chat Modal
-function openChat(sellerName, productName) {
-    const modal = document.getElementById('chatModal');
-    if (modal) {
-        const title = modal.querySelector('.chat-header h3');
-        if (title) {
-            title.innerHTML = `<i class="fas fa-comments"></i> دردشة مع ${sellerName} - ${productName}`;
-        }
-        modal.style.display = 'flex';
-    }
-}
-
-// Send Chat Message
-function sendChatMessage() {
-    const input = document.getElementById('chatInput');
-    const message = input.value.trim();
-    
-    if (!message) return;
-    
-    const chatBody = document.getElementById('chatBody');
-    
-    // Add user message
-    const messageDiv = document.createElement('div');
-    messageDiv.className = 'chat-message';
-    messageDiv.innerHTML = `
-        <div class="message-sender">أنت</div>
-        <div class="message-content own">${message}</div>
-    `;
-    
-    chatBody.appendChild(messageDiv);
-    
-    // Clear input
-    input.value = '';
-    
-    // Scroll to bottom
-    chatBody.scrollTop = chatBody.scrollHeight;
-    
-    // Simulate reply after 1 second
-    setTimeout(() => {
-        const replyDiv = document.createElement('div');
-        replyDiv.className = 'chat-message';
-        replyDiv.innerHTML = `
-            <div class="message-sender">البائع</div>
-            <div class="message-content">شكراً لاهتمامك، سنتواصل معك قريباً لتأكيد التفاصيل</div>
-        `;
-        
-        chatBody.appendChild(replyDiv);
-        chatBody.scrollTop = chatBody.scrollHeight;
-    }, 1000);
-}
-
-// Logout Function
-function logout() {
-    // Clear localStorage
-    localStorage.removeItem('rashadUser');
-    
-    // Redirect to home page
-    window.location.href = 'index.html';
-}
-
-// Initialize Supabase (for real implementation)
-// Uncomment and configure when you have Supabase credentials
-/*
-const supabaseUrl = 'YOUR_SUPABASE_URL';
-const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-*/
+</script>
