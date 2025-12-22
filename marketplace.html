@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>السوق - رشّاد</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="navbar">
+        <div class="container">
+            <div class="navbar-container">
+                <a href="index.html" class="navbar-brand">
+                    <i class="fas fa-seedling"></i>
+                    <span>رشّاد<span class="accent">.</span></span>
+                </a>
+                
+                <button class="navbar-toggler">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <ul class="navbar-menu">
+                    <li><a href="index.html" class="navbar-link">الرئيسية</a></li>
+                    <li><a href="#products" class="navbar-link active">المنتجات</a></li>
+                    <li><a href="#categories" class="navbar-link">التصنيفات</a></li>
+                    <li><a href="#sellers" class="navbar-link">البائعون</a></li>
+                    <li><a href="expert-consultation.html" class="navbar-link">الاستشارات</a></li>
+                </ul>
+                
+                <div class="auth-buttons">
+                    <a href="login.html" class="btn btn-outline">تسجيل الدخول</a>
+                    <a href="register.html" class="btn btn-primary">إنشاء حساب</a>
+                </div>
+                
+                <div class="user-menu" style="display: none;">
+                    <div class="user-avatar"></div>
+                    <div>
+                        <div class="user-name"></div>
+                        <div class="user-type"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Marketplace Hero -->
+    <section class="hero" style="background: linear-gradient(rgba(46, 125, 50, 0.9), rgba(46, 125, 50, 0.9)); margin-top: 70px;">
+        <div class="container">
+            <h1>سوق رشّاد الزراعي</h1>
+            <p class="lead">بيع وشراء المحاصيل والمستلزمات الزراعية مباشرة بين المزارعين والموردين والتجار</p>
+            
+            <div class="search-bar" style="max-width: 600px; margin: 2rem auto;">
+                <form id="searchForm" class="search-form">
+                    <div class="search-input">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="ابحث عن منتجات زراعية...">
+                    </div>
+                    <button type="submit" class="btn btn-primary">بحث</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Marketplace Content -->
+    <section class="section" id="products">
+        <div class="container">
+            <div class="section-title">
+                <h2>المنتجات المتاحة</h2>
+                <p class="text-muted">تصفح أحدث المنتجات الزراعية في السوق</p>
+            </div>
+            
+            <!-- Filters -->
+            <div class="filters-card">
+                <form id="filterForm" class="filter-form">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label for="productType">نوع المنتج</label>
+                            <select id="productType" class="form-control">
+                                <option value="all">جميع المنتجات</option>
+                                <option value="crop">محاصيل</option>
+                                <option value="seed">بذور</option>
+                                <option value="fertilizer">أسمدة</option>
+                                <option value="equipment">معدات</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="state">الولاية</label>
+                            <select id="state" class="form-control">
+                                <option value="all">جميع الولايات</option>
+                                <option value="khartoum">الخرطوم</option>
+                                <option value="gezira">الجزيرة</option>
+                                <option value="gadarif">القضارف</option>
+                                <option value="sennar">سنار</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="category">التصنيف</label>
+                            <select id="category" class="form-control">
+                                <option value="all">جميع التصنيفات</option>
+                                <option value="قمح">قمح</option>
+                                <option value="ذرة">ذرة</option>
+                                <option value="فول سوداني">فول سوداني</option>
+                                <option value="سمسم">سمسم</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="priceRange">نطاق السعر</label>
+                            <select id="priceRange" class="form-control">
+                                <option value="all">جميع الأسعار</option>
+                                <option value="0-1000">أقل من 1000 ج.س</option>
+                                <option value="1000-5000">1000 - 5000 ج.س</option>
+                                <option value="5000-10000">5000 - 10000 ج.س</option>
+                                <option value="10000+">أكثر من 10000 ج.س</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-filter"></i> تطبيق الفلاتر
+                        </button>
+                        <button type="button" class="btn btn-outline clear-filters">
+                            <i class="fas fa-times"></i> مسح الفلاتر
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Products Grid -->
+            <div id="productsGrid" class="products-grid">
+                <!-- Products will be loaded here dynamically -->
+                <div class="loading">جاري تحميل المنتجات...</div>
+            </div>
+            
+            <!-- Add Product Button (for suppliers) -->
+            <div id="addProductSection" style="display: none; margin-top: 3rem; text-align: center;">
+                <h3>هل تريد بيع منتجاتك؟</h3>
+                <p class="text-muted">أضف منتجاتك الزراعية للبيع في السوق</p>
+                <button class="btn btn-primary btn-lg" onclick="addNewProduct()">
+                    <i class="fas fa-plus"></i> إضافة منتج جديد
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="section bg-light" id="categories">
+        <div class="container">
+            <div class="section-title">
+                <h2>التصنيفات الرئيسية</h2>
+                <p class="text-muted">تصفح المنتجات حسب التصنيف</p>
+            </div>
+            
+            <div class="categories-grid">
+                <div class="category-card" onclick="filterByCategory('crop')">
+                    <div class="category-icon">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <h3>المحاصيل</h3>
+                    <p class="text-muted">قمح، ذرة، فول سوداني، سمسم</p>
+                </div>
+                
+                <div class="category-card" onclick="filterByCategory('seed')">
+                    <div class="category-icon">
+                        <i class="fas fa-seeds"></i>
+                    </div>
+                    <h3>البذور</h3>
+                    <p class="text-muted">بذور محاصيل مختلفة وأصناف محسنة</p>
+                </div>
+                
+                <div class="category-card" onclick="filterByCategory('fertilizer')">
+                    <div class="category-icon">
+                        <i class="fas fa-flask"></i>
+                    </div>
+                    <h3>الأسمدة</h3>
+                    <p class="text-muted">أسمدة عضوية وكيماوية لتحسين التربة</p>
+                </div>
+                
+                <div class="category-card" onclick="filterByCategory('equipment')">
+                    <div class="category-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <h3>المعدات</h3>
+                    <p class="text-muted">معدات زراعية وأدوات ومضخات ري</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Top Sellers -->
+    <section class="section" id="sellers">
+        <div class="container">
+            <div class="section-title">
+                <h2>أبرز البائعين</h2>
+                <p class="text-muted">تسوق من موردين موثوقين</p>
+            </div>
+            
+            <div class="sellers-grid">
+                <div class="seller-card">
+                    <div class="seller-avatar-lg">ع</div>
+                    <div class="seller-info">
+                        <h4>عمر محمد</h4>
+                        <p class="text-muted">مزارع قمح وذرة</p>
+                        <div class="seller-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                            <span>4.7 (42 تقييم)</span>
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="viewSellerProducts('عمر محمد')">عرض المنتجات</button>
+                    </div>
+                </div>
+                
+                <div class="seller-card">
+                    <div class="seller-avatar-lg">س</div>
+                    <div class="seller-info">
+                        <h4>سالم للتجارة</h4>
+                        <p class="text-muted">مورد بذور وأسمدة</p>
+                        <div class="seller-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <span>4.0 (28 تقييم)</span>
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="viewSellerProducts('سالم للتجارة')">عرض المنتجات</button>
+                    </div>
+                </div>
+                
+                <div class="seller-card">
+                    <div class="seller-avatar-lg">ح</div>
+                    <div class="seller-info">
+                        <h4>حسن إبراهيم</h4>
+                        <p class="text-muted">متخصص في الفول السوداني</p>
+                        <div class="seller-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <span>5.0 (35 تقييم)</span>
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="viewSellerProducts('حسن إبراهيم')">عرض المنتجات</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <a href="index.html" class="footer-logo">
+                        <i class="fas fa-seedling"></i>
+                        رشّاد<span class="accent">.</span>
+                    </a>
+                    <p>سوق زراعي مباشر يربط المزارعين بالموردين والتجار في السودان</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>روابط سريعة</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">الرئيسية</a></li>
+                        <li><a href="#products">المنتجات</a></li>
+                        <li><a href="#categories">التصنيفات</a></li>
+                        <li><a href="#sellers">البائعون</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>الحسابات</h3>
+                    <ul class="footer-links">
+                        <li><a href="login.html">تسجيل الدخول</a></li>
+                        <li><a href="register.html">إنشاء حساب</a></li>
+                        <li><a href="farmer-dashboard.html">لوحة المزارع</a></li>
+                        <li><a href="supplier-dashboard.html">لوحة المورد</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>الدعم</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">الأسئلة الشائعة</a></li>
+                        <li><a href="#">كيفية البيع</a></li>
+                        <li><a href="#">كيفية الشراء</a></li>
+                        <li><a href="#">اتصل بنا</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>جميع الحقوق محفوظة &copy; <span class="current-year">2023</span> منصة رشّاد</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth-manager.js"></script>
+    <script src="script.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', async function() {
+        await window.authManager.checkAuthState();
+        
+        // Show add product section for suppliers
+        const user = window.authManager.getProfile();
+        if (user && user.user_type === 'supplier') {
+            document.getElementById('addProductSection').style.display = 'block';
+        }
+        
+        // Load marketplace data
+        await loadMarketplaceData();
+        
+        // Setup filters
+        setupMarketplaceFilters();
+    });
+    
+    function setupMarketplaceFilters() {
+        const filterForm = document.getElementById('filterForm');
+        const searchForm = document.getElementById('searchForm');
+        
+        if (filterForm) {
+            filterForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                applyMarketplaceFilters();
+            });
+            
+            const clearBtn = filterForm.querySelector('.clear-filters');
+            if (clearBtn) {
+                clearBtn.addEventListener('click', function() {
+                    filterForm.reset();
+                    applyMarketplaceFilters();
+                });
+            }
+        }
+        
+        if (searchForm) {
+            searchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const searchTerm = document.getElementById('searchInput').value;
+                searchProducts(searchTerm);
+            });
+        }
+    }
+    
+    async function applyMarketplaceFilters() {
+        const filters = {
+            product_type: document.getElementById('productType').value,
+            state: document.getElementById('state').value,
+            category: document.getElementById('category').value
+        };
+        
+        // Handle price range
+        const priceRange = document.getElementById('priceRange').value;
+        if (priceRange !== 'all') {
+            if (priceRange === '0-1000') {
+                filters.min_price = 0;
+                filters.max_price = 1000;
+            } else if (priceRange === '1000-5000') {
+                filters.min_price = 1000;
+                filters.max_price = 5000;
+            } else if (priceRange === '5000-10000') {
+                filters.min_price = 5000;
+                filters.max_price = 10000;
+            } else if (priceRange === '10000+') {
+                filters.min_price = 10000;
+            }
+        }
+        
+        // Update URL with filters
+        const url = new URL(window.location);
+        Object.keys(filters).forEach(key => {
+            if (filters[key] && filters[key] !== 'all') {
+                url.searchParams.set(key, filters[key]);
+            } else {
+                url.searchParams.delete(key);
+            }
+        });
+        
+        window.history.pushState({}, '', url);
+        
+        // Load filtered products
+        await loadMarketplaceData(filters);
+    }
+    
+    async function searchProducts(searchTerm) {
+        try {
+            const result = await window.supabaseFunctions.searchProducts(searchTerm);
+            
+            if (result.success) {
+                displayProducts(result.data);
+            } else {
+                showError('حدث خطأ في البحث');
+            }
+        } catch (error) {
+            console.error('Error searching products:', error);
+            showError('حدث خطأ في البحث');
+        }
+    }
+    
+    function filterByCategory(category) {
+        document.getElementById('productType').value = category;
+        applyMarketplaceFilters();
+    }
+    
+    function viewSellerProducts(sellerName) {
+        document.getElementById('searchInput').value = sellerName;
+        searchProducts(sellerName);
+    }
+    
+    function addNewProduct() {
+        if (!window.authManager.isAuthenticated()) {
+            alert('يجب تسجيل الدخول لإضافة منتج');
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        const user = window.authManager.getProfile();
+        if (user.user_type !== 'supplier') {
+            alert('هذه الميزة متاحة للموردين فقط');
+            return;
+        }
+        
+        // In a real app, this would open a product form
+        // For now, redirect to supplier dashboard
+        window.location.href = 'supplier-dashboard.html';
+    }
+    
+    function showError(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'alert alert-error';
+        errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+        
+        const container = document.querySelector('.container');
+        if (container) {
+            container.insertBefore(errorDiv, container.firstChild);
+            
+            setTimeout(() => errorDiv.remove(), 5000);
+        }
+    }
+    </script>
+    <style>
+    .filters-card {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-light);
+    }
+    
+    .filter-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .filter-actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+    }
+    
+    .search-bar {
+        width: 100%;
+    }
+    
+    .search-form {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .search-input {
+        flex: 1;
+        position: relative;
+    }
+    
+    .search-input i {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray-dark);
+    }
+    
+    .search-input input {
+        width: 100%;
+        padding: 1rem 3rem 1rem 1rem;
+        border: none;
+        border-radius: var(--border-radius);
+        font-size: 1rem;
+    }
+    
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+    
+    .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .category-card {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: var(--transition);
+        box-shadow: var(--shadow-light);
+    }
+    
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-medium);
+    }
+    
+    .category-icon {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+    
+    .sellers-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .seller-card {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: var(--shadow-light);
+    }
+    
+    .seller-avatar-lg {
+        width: 100px;
+        height: 100px;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin: 0 auto 1rem;
+    }
+    
+    .seller-rating {
+        color: var(--accent-color);
+        margin: 0.5rem 0;
+    }
+    
+    @media (max-width: 768px) {
+        .filter-row {
+            grid-template-columns: 1fr;
+        }
+        
+        .search-form {
+            flex-direction: column;
+        }
+        
+        .products-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    </style>
+</body>
+  </html>
