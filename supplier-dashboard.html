@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة المورد - رشّاد</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-page">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <i class="fas fa-seedling"></i>
+                <span>رشّاد<span class="accent">.</span></span>
+            </div>
+            
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">م</div>
+                <div>
+                    <div class="user-name" id="userName">شركة الخير الزراعية</div>
+                    <div class="user-type" id="userType">مورد</div>
+                </div>
+            </div>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li><a href="supplier-dashboard.html" class="active"><i class="fas fa-home"></i> الرئيسية</a></li>
+            <li><a href="#"><i class="fas fa-boxes"></i> المنتجات</a></li>
+            <li><a href="#"><i class="fas fa-shopping-cart"></i> الطلبات</a></li>
+            <li><a href="#"><i class="fas fa-chart-line"></i> التقارير</a></li>
+            <li><a href="marketplace.html"><i class="fas fa-store"></i> السوق</a></li>
+            <li><a href="#"><i class="fas fa-comments"></i> الرسائل</a></li>
+            <li><a href="#"><i class="fas fa-truck"></i> التوصيل</a></li>
+            <li><a href="#"><i class="fas fa-money-bill-wave"></i> المدفوعات</a></li>
+            <li><a href="#"><i class="fas fa-users"></i> العملاء</a></li>
+            <li><a href="#"><i class="fas fa-cog"></i> الإعدادات</a></li>
+            <li><a href="index.html" onclick="logout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="page-title">
+                <h1>لوحة تحكم المورد</h1>
+                <p id="welcomeMessage">إدارة منتجاتك الزراعية والطلبات</p>
+            </div>
+            
+            <div class="top-bar-actions">
+                <div class="notification-icon">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">5</span>
+                </div>
+                <button class="btn btn-primary" onclick="addNewProduct()">
+                    <i class="fas fa-plus"></i> إضافة منتج جديد
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-boxes"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="activeProducts">0</div>
+                    <div class="stat-label">منتج نشط</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="newOrders">0</div>
+                    <div class="stat-label">طلب جديد</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="monthlyRevenue">0</div>
+                    <div class="stat-label">جنيه (إيرادات الشهر)</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="rating">0.0</div>
+                    <div class="stat-label">تقييم العملاء</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="content-grid">
+            <!-- Products Table -->
+            <div class="content-card wide">
+                <div class="card-header">
+                    <h2><i class="fas fa-boxes"></i> منتجاتي</h2>
+                    <a href="#" class="btn btn-outline btn-sm">عرض الكل</a>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>المنتج</th>
+                                <th>النوع</th>
+                                <th>الكمية</th>
+                                <th>السعر</th>
+                                <th>الحالة</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="supplierProducts">
+                            <tr>
+                                <td colspan="6" class="text-center">جاري تحميل المنتجات...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Recent Orders -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-shopping-cart"></i> طلبات حديثة</h2>
+                    <a href="#" class="btn btn-outline btn-sm">عرض الكل</a>
+                </div>
+                <div id="supplierOrders" class="card-body">
+                    <div class="loading">جاري تحميل الطلبات...</div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-bolt"></i> إجراءات سريعة</h2>
+                </div>
+                <div class="card-body">
+                    <div class="quick-actions">
+                        <button class="quick-action-btn" onclick="addNewProduct()">
+                            <i class="fas fa-plus"></i>
+                            <span>إضافة منتج</span>
+                        </button>
+                        
+                        <button class="quick-action-btn" onclick="viewOrders()">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>عرض الطلبات</span>
+                        </button>
+                        
+                        <button class="quick-action-btn" onclick="manageInventory()">
+                            <i class="fas fa-boxes"></i>
+                            <span>إدارة المخزون</span>
+                        </button>
+                        
+                        <button class="quick-action-btn" onclick="viewReports()">
+                            <i class="fas fa-chart-line"></i>
+                            <span>عرض التقارير</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Messages -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-comments"></i> رسائل حديثة</h2>
+                </div>
+                <div class="card-body">
+                    <div class="messages-list">
+                        <div class="message-item unread">
+                            <div class="message-avatar">م</div>
+                            <div class="message-content">
+                                <div class="message-sender">محمد أحمد</div>
+                                <p class="message-preview">مرحباً، أرغب في شراء 100 كجم من بذور القمح...</p>
+                                <small class="text-muted">منذ 15 دقيقة</small>
+                            </div>
+                        </div>
+                        
+                        <div class="message-item">
+                            <div class="message-avatar">س</div>
+                            <div class="message-content">
+                                <div class="message-sender">سالم التاجر</div>
+                                <p class="message-preview">أود طلب 50 كيس سماد يوريا...</p>
+                                <small class="text-muted">منذ ساعتين</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth-manager.js"></script>
+    <script src="script.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', async function() {
+        // التحقق من المصادقة
+        await window.authManager.checkAuthState();
+        
+        if (!window.authManager.isAuthenticated()) {
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        const user = window.authManager.getProfile();
+        
+        // التحقق من نوع المستخدم
+        if (user.user_type !== 'supplier') {
+            window.location.href = 'index.html';
+            return;
+        }
+        
+        // تحديث معلومات المستخدم
+        updateUserInfo(user);
+        
+        // تحميل بيانات لوحة التحكم
+        await loadSupplierDashboardData();
+    });
+    
+    function updateUserInfo(user) {
+        document.getElementById('userAvatar').textContent = user.first_name?.charAt(0) || 'م';
+        document.getElementById('userName').textContent = user.first_name || 'مستخدم';
+        document.getElementById('userType').textContent = 'مورد';
+        document.getElementById('welcomeMessage').textContent = `مرحباً ${user.first_name || 'مستخدم'}!`;
+    }
+    
+    function addNewProduct() {
+        // في التطبيق الحقيقي، سيفتح هذا نموذج إضافة منتج
+        alert('ميزة إضافة منتج جديد قيد التطوير. سيتم تفعيلها قريباً.');
+        
+        // للنسخة التجريبية، نستخدم نموذج بسيط
+        const productName = prompt('أدخل اسم المنتج:');
+        if (productName) {
+            alert(`تم إضافة المنتج "${productName}" بنجاح!\nسيتم عرضه في السوق بعد المراجعة.`);
+            
+            // إعادة تحميل البيانات
+            loadSupplierDashboardData();
+        }
+    }
+    
+    function viewOrders() {
+        alert('ميزة عرض الطلبات قيد التطوير. سيتم تفعيلها قريباً.');
+    }
+    
+    function manageInventory() {
+        alert('ميزة إدارة المخزون قيد التطوير. سيتم تفعيلها قريباً.');
+    }
+    
+    function viewReports() {
+        alert('ميزة عرض التقارير قيد التطوير. سيتم تفعيلها قريباً.');
+    }
+    
+    function logout() {
+        event.preventDefault();
+        window.authManager.logout();
+    }
+    </script>
+    <style>
+    /* استخدام نفس أنماط farmer-dashboard مع تعديلات بسيطة */
+    .messages-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .message-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 0.75rem;
+        border-radius: var(--border-radius);
+        background: var(--light-color);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    
+    .message-item:hover {
+        background: var(--gray-medium);
+    }
+    
+    .message-item.unread {
+        background: #e3f2fd;
+        border-right: 3px solid var(--info-color);
+    }
+    
+    .message-avatar {
+        width: 40px;
+        height: 40px;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        flex-shrink: 0;
+    }
+    
+    .message-content {
+        flex: 1;
+    }
+    
+    .message-sender {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+    
+    .message-preview {
+        color: var(--gray-dark);
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+    
+    .text-center {
+        text-align: center;
+    }
+    </style>
+</body>
+  </html>
