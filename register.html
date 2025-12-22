@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء حساب - رشّاد</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="auth-page">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <i class="fas fa-seedling"></i>
+                    <span>رشّاد<span class="accent">.</span></span>
+                </div>
+                <h1>إنشاء حساب جديد</h1>
+                <p class="text-muted">انضم إلى منصة رشّاد الزراعية الذكية</p>
+            </div>
+
+            <div id="authMessage" class="alert" style="display: none;"></div>
+
+            <form id="registerForm" class="auth-form">
+                <div class="form-group">
+                    <label>نوع الحساب</label>
+                    <div class="user-type-cards">
+                        <div class="user-type-card" data-type="farmer" onclick="selectUserType('farmer')">
+                            <div class="user-type-icon">
+                                <i class="fas fa-tractor"></i>
+                            </div>
+                            <p>مزارع</p>
+                        </div>
+                        
+                        <div class="user-type-card" data-type="supplier" onclick="selectUserType('supplier')">
+                            <div class="user-type-icon">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <p>مورد</p>
+                        </div>
+                        
+                        <div class="user-type-card" data-type="trader" onclick="selectUserType('trader')">
+                            <div class="user-type-icon">
+                                <i class="fas fa-store"></i>
+                            </div>
+                            <p>تاجر</p>
+                        </div>
+                    </div>
+                    <input type="hidden" id="userType" name="userType" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">الاسم الأول</label>
+                        <input type="text" id="firstName" class="form-control" placeholder="أدخل الاسم الأول" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lastName">اسم العائلة</label>
+                        <input type="text" id="lastName" class="form-control" placeholder="أدخل اسم العائلة" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">البريد الإلكتروني</label>
+                    <input type="email" id="email" class="form-control" placeholder="example@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">رقم الهاتف</label>
+                    <input type="tel" id="phone" class="form-control" placeholder="09XXXXXXXX" required>
+                    <small class="form-text">يجب أن يبدأ بـ 09 ويتكون من 10 أرقام</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="state">الولاية</label>
+                    <select id="state" class="form-control" required>
+                        <option value="" selected disabled>اختر ولايتك</option>
+                        <option value="khartoum">الخرطوم</option>
+                        <option value="gezira">الجزيرة</option>
+                        <option value="nile">النيل</option>
+                        <option value="northern">الشمالية</option>
+                        <option value="kassala">كسلا</option>
+                        <option value="gadarif">القضارف</option>
+                        <option value="blue-nile">النيل الأزرق</option>
+                        <option value="white-nile">النيل الأبيض</option>
+                        <option value="sennar">سنار</option>
+                        <option value="north-darfur">شمال دارفور</option>
+                        <option value="south-darfur">جنوب دارفور</option>
+                        <option value="west-darfur">غرب دارفور</option>
+                        <option value="central-darfur">وسط دارفور</option>
+                        <option value="east-darfur">شرق دارفور</option>
+                        <option value="north-kordofan">شمال كردفان</option>
+                        <option value="south-kordofan">جنوب كردفان</option>
+                        <option value="west-kordofan">غرب كردفان</option>
+                        <option value="red-sea">البحر الأحمر</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password">كلمة المرور</label>
+                        <input type="password" id="password" class="form-control" placeholder="أدخل كلمة المرور" required>
+                        <small class="form-text">يجب أن تكون 6 أحرف على الأقل</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword">تأكيد كلمة المرور</label>
+                        <input type="password" id="confirmPassword" class="form-control" placeholder="أعد إدخال كلمة المرور" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="terms" required>
+                        <span>أوافق على <a href="#" class="text-primary">شروط الخدمة</a> و <a href="#" class="text-primary">سياسة الخصوصية</a></span>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">
+                    <span id="registerBtnText">إنشاء حساب</span>
+                    <span id="registerLoading" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i> جاري إنشاء الحساب...
+                    </span>
+                </button>
+            </form>
+            
+            <div class="auth-footer">
+                <p>هل لديك حساب بالفعل؟ <a href="login.html">تسجيل الدخول</a></p>
+                <p><a href="index.html">العودة إلى الصفحة الرئيسية</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth-manager.js"></script>
+    <script src="script.js"></script>
+    <script>
+    let selectedUserType = '';
+    
+    function selectUserType(type) {
+        selectedUserType = type;
+        document.getElementById('userType').value = type;
+        
+        // Update UI
+        document.querySelectorAll('.user-type-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+        
+        document.querySelector(`.user-type-card[data-type="${type}"]`).classList.add('selected');
+    }
+    
+    document.addEventListener('DOMContentLoaded', async function() {
+        await window.authManager.checkAuthState();
+        
+        // إذا كان المستخدم مسجلاً، قم بتوجيهه
+        if (window.authManager.isAuthenticated()) {
+            const userType = window.authManager.getUserType();
+            redirectBasedOnUserType(userType);
+        }
+        
+        const registerForm = document.getElementById('registerForm');
+        if (registerForm) {
+            registerForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const userData = {
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    state: document.getElementById('state').value,
+                    password: document.getElementById('password').value,
+                    userType: document.getElementById('userType').value
+                };
+                
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                const terms = document.getElementById('terms').checked;
+                
+                // التحقق من الصحة
+                if (!userData.firstName || !userData.lastName || !userData.email || 
+                    !userData.phone || !userData.state || !userData.password || 
+                    !confirmPassword || !userData.userType) {
+                    showMessage('يرجى ملء جميع الحقول المطلوبة', 'error');
+                    return;
+                }
+                
+                if (!terms) {
+                    showMessage('يجب الموافقة على شروط الخدمة وسياسة الخصوصية', 'error');
+                    return;
+                }
+                
+                if (userData.password !== confirmPassword) {
+                    showMessage('كلمات المرور غير متطابقة', 'error');
+                    return;
+                }
+                
+                if (userData.password.length < 6) {
+                    showMessage('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
+                    return;
+                }
+                
+                if (!userData.userType) {
+                    showMessage('يرجى اختيار نوع الحساب', 'error');
+                    return;
+                }
+                
+                // التحقق من صحة البريد الإلكتروني
+                if (!isValidEmail(userData.email)) {
+                    showMessage('البريد الإلكتروني غير صحيح', 'error');
+                    return;
+                }
+                
+                // التحقق من صحة رقم الهاتف السوداني
+                if (!isValidSudanesePhone(userData.phone)) {
+                    showMessage('رقم الهاتف غير صحيح. يجب أن يبدأ بـ 09 ويتكون من 10 أرقام', 'error');
+                    return;
+                }
+                
+                // عرض حالة التحميل
+                document.getElementById('registerBtnText').style.display = 'none';
+                document.getElementById('registerLoading').style.display = 'inline';
+                
+                try {
+                    const result = await window.authManager.register(userData);
+                    
+                    if (result.success) {
+                        showMessage('تم إنشاء الحساب بنجاح! يرجى التحقق من بريدك الإلكتروني لتأكيد الحساب.', 'success');
+                        
+                        // إعادة تعيين النموذج
+                        registerForm.reset();
+                        
+                        // توجيه إلى صفحة تسجيل الدخول بعد 3 ثوانٍ
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 3000);
+                        
+                    } else {
+                        showMessage(result.error || 'حدث خطأ أثناء إنشاء الحساب', 'error');
+                        document.getElementById('registerBtnText').style.display = 'inline';
+                        document.getElementById('registerLoading').style.display = 'none';
+                    }
+                } catch (error) {
+                    showMessage('حدث خطأ غير متوقع', 'error');
+                    document.getElementById('registerBtnText').style.display = 'inline';
+                    document.getElementById('registerLoading').style.display = 'none';
+                }
+            });
+        }
+    });
+    
+    function isValidEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
+    
+    function isValidSudanesePhone(phone) {
+        const re = /^09[0-9]{8}$/;
+        return re.test(phone);
+    }
+    
+    function redirectBasedOnUserType(userType) {
+        switch(userType) {
+            case 'farmer':
+                window.location.href = 'farmer-dashboard.html';
+                break;
+            case 'supplier':
+                window.location.href = 'supplier-dashboard.html';
+                break;
+            case 'trader':
+                window.location.href = 'trader-dashboard.html';
+                break;
+            default:
+                window.location.href = 'index.html';
+        }
+    }
+    
+    function showMessage(message, type = 'info') {
+        const messageDiv = document.getElementById('authMessage');
+        messageDiv.textContent = message;
+        messageDiv.className = `alert alert-${type}`;
+        messageDiv.style.display = 'block';
+        
+        setTimeout(() => {
+            messageDiv.style.display = 'none';
+        }, 5000);
+    }
+    </script>
+    <style>
+    .auth-page {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    
+    .auth-container {
+        width: 100%;
+        max-width: 500px;
+    }
+    
+    .auth-card {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-heavy);
+        overflow: hidden;
+    }
+    
+    .auth-header {
+        background: var(--primary-color);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+    }
+    
+    .auth-logo {
+        font-size: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .auth-header h1 {
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+    
+    .auth-form {
+        padding: 2rem;
+    }
+    
+    .auth-footer {
+        padding: 1.5rem 2rem;
+        border-top: 1px solid var(--gray-medium);
+        text-align: center;
+        color: var(--gray-dark);
+    }
+    
+    .auth-footer a {
+        color: var(--primary-color);
+        font-weight: 500;
+    }
+    
+    .user-type-cards {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .user-type-card {
+        flex: 1;
+        padding: 1.5rem 1rem;
+        border: 2px solid var(--gray-medium);
+        border-radius: var(--border-radius);
+        text-align: center;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    
+    .user-type-card:hover {
+        border-color: var(--primary-color);
+        background-color: var(--light-color);
+    }
+    
+    .user-type-card.selected {
+        border-color: var(--primary-color);
+        background-color: var(--light-color);
+    }
+    
+    .user-type-icon {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+    }
+    
+    .checkbox-label input[type="checkbox"] {
+        width: auto;
+    }
+    
+    @media (max-width: 768px) {
+        .user-type-cards {
+            flex-direction: column;
+        }
+        
+        .form-row {
+            flex-direction: column;
+            gap: 0;
+        }
+    }
+    </style>
+</body>
+  </html>
