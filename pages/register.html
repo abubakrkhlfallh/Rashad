@@ -334,36 +334,36 @@
         </div>
     </div>
 
-    <script>
-        let selectedUserType = '';
-        
-        function selectUserType(type) {
-            selectedUserType = type;
-            document.getElementById('userType').value = type;
-            
-            // Update UI
-            document.querySelectorAll('.user-type-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            
-            document.querySelector(`.user-type-card[data-type="${type}"]`).classList.add('selected');
-        }
-        
-        document.getElementById('registerForm').addEventListener('submit', function(e) {
+    <!-- إضافة قبل </body> -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="auth-manager.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async function() {
+    await window.authManager.checkAuthState();
+    
+    const registerForm = document.getElementById('registerForm');
+    if (registerForm) {
+        registerForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const firstName = document.getElementById('firstName').value;
-            const lastName = document.getElementById('lastName').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
-            const state = document.getElementById('state').value;
-            const password = document.getElementById('password').value;
+            const userData = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                state: document.getElementById('state').value,
+                password: document.getElementById('password').value,
+                userType: document.getElementById('userType').value
+            };
+            
             const confirmPassword = document.getElementById('confirmPassword').value;
-            const userType = document.getElementById('userType').value;
             const terms = document.getElementById('terms').checked;
             
-            // Validation
-            if (!firstName || !lastName || !email || !phone || !state || !password || !confirmPassword || !userType) {
+            // التحقق من الصحة
+            if (!userData.firstName || !userData.lastName || !userData.email || 
+                !userData.phone || !userData.state || !userData.password || 
+                !confirmPassword || !userData.userType) {
                 showError('يرجى ملء جميع الحقول المطلوبة');
                 return;
             }
@@ -373,72 +373,90 @@
                 return;
             }
             
-            if (password !== confirmPassword) {
+            if (userData.password !== confirmPassword) {
                 showError('كلمات المرور غير متطابقة');
                 return;
             }
             
-            if (password.length < 6) {
+            if (userData.password.length < 6) {
                 showError('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
                 return;
             }
             
-            if (!userType) {
+            if (!userData.userType) {
                 showError('يرجى اختيار نوع الحساب');
                 return;
             }
             
-            // Simulate registration process
-            showSuccess('جاري إنشاء الحساب...');
+            // التحقق من صحة البريد الإلكتروني
+            if (!isValidEmail(userData.email)) {
+                showError('البريد الإلكتروني غير صحيح');
+                return;
+            }
             
-            // Store user data in localStorage (for demo purposes)
-            const userData = {
-                firstName,
-                lastName,
-                email,
-                phone,
-                state,
-                userType,
-                registeredAt: new Date().toISOString()
-            };
+            // التحقق من صحة رقم الهاتف السوداني
+            if (!isValidSudanesePhone(userData.phone)) {
+                showError('رقم الهاتف غير صحيح. يجب أن يبدأ بـ 09 ويتكون من 10 أرقام');
+                return;
+            }
             
-            localStorage.setItem('rashadUser', JSON.stringify(userData));
+            // عرض حالة التحميل
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري إنشاء الحساب...';
+            submitBtn.disabled = true;
             
-            // Redirect based on user type after 2 seconds
-            setTimeout(() => {
-                switch(userType) {
-                    case 'farmer':
-                        window.location.href = 'farmer-dashboard.html';
-                        break;
-                    case 'supplier':
-                        window.location.href = 'supplier-dashboard.html';
-                        break;
-                    case 'trader':
-                        window.location.href = 'trader-dashboard.html';
-                        break;
-                    default:
-                        window.location.href = 'index.html';
+            try {
+                const result = await window.authManager.register(userData);
+                
+                if (result.success) {
+                    showSuccess('تم إنشاء الحساب بنجاح! يرجى التحقق من بريدك الإلكتروني لتأكيد الحساب.');
+                    
+                    // إعادة تعيين النموذج
+                    registerForm.reset();
+                    
+                    // توجيه إلى صفحة تسجيل الدخول بعد 3 ثوانٍ
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 3000);
+                    
+                } else {
+                    showError(result.error || 'حدث خطأ أثناء إنشاء الحساب');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
                 }
-            }, 2000);
+            } catch (error) {
+                showError('حدث خطأ غير متوقع');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
         });
-        
-        function showError(message) {
-            const errorDiv = document.getElementById('errorMessage');
-            errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
-            errorDiv.style.display = 'block';
-            
-            // Hide success message if shown
-            document.getElementById('successMessage').style.display = 'none';
-        }
-        
-        function showSuccess(message) {
-            const successDiv = document.getElementById('successMessage');
-            successDiv.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
-            successDiv.style.display = 'block';
-            
-            // Hide error message if shown
-            document.getElementById('errorMessage').style.display = 'none';
-        }
-    </script>
+    }
+});
+
+function isValidEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+function isValidSudanesePhone(phone) {
+    const re = /^09[0-9]{8}$/;
+    return re.test(phone);
+}
+
+function showError(message) {
+    const errorDiv = document.getElementById('errorMessage');
+    errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+    errorDiv.style.display = 'block';
+    document.getElementById('successMessage').style.display = 'none';
+}
+
+function showSuccess(message) {
+    const successDiv = document.getElementById('successMessage');
+    successDiv.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+    successDiv.style.display = 'block';
+    document.getElementById('errorMessage').style.display = 'none';
+}
+                                                  </script>
 </body>
                           </html>
