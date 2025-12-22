@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>رشّاد - منصة الاستشارات الزراعية الذكية</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="navbar">
+        <div class="container">
+            <div class="navbar-container">
+                <a href="index.html" class="navbar-brand">
+                    <i class="fas fa-seedling"></i>
+                    <span>رشّاد<span class="accent">.</span></span>
+                </a>
+                
+                <button class="navbar-toggler">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <ul class="navbar-menu">
+                    <li><a href="#home" class="navbar-link active">الرئيسية</a></li>
+                    <li><a href="#features" class="navbar-link">المميزات</a></li>
+                    <li><a href="#how-it-works" class="navbar-link">كيف يعمل</a></li>
+                    <li><a href="#user-types" class="navbar-link">أنواع المستخدمين</a></li>
+                    <li><a href="#contact" class="navbar-link">اتصل بنا</a></li>
+                </ul>
+                
+                <div class="auth-buttons">
+                    <a href="login.html" class="btn btn-outline">تسجيل الدخول</a>
+                    <a href="register.html" class="btn btn-primary">إنشاء حساب</a>
+                </div>
+                
+                <div class="user-menu" style="display: none;">
+                    <div class="user-avatar"></div>
+                    <div>
+                        <div class="user-name"></div>
+                        <div class="user-type"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <h1>منصة الاستشارات الزراعية الذكية</h1>
+            <p class="lead">تطبيق ذكي يقدم خطط زراعية مخصصة بناءً على بيانات أرضك والظروف المناخية المحلية في السودان. استشارات مع خبراء، تسويق محاصيلك، وتوصيات ذكية لزيادة إنتاجيتك.</p>
+            <a href="register.html" class="btn btn-primary btn-lg">ابدأ مجانًا الآن</a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section bg-light" id="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>مميزات منصة رشّاد</h2>
+                <p class="text-muted">منصة متكاملة لخدمة القطاع الزراعي في السودان</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>خطط زراعية ذكية</h3>
+                    <p>احصل على خطة زراعية مخصصة لأرضك بناءً على نوع التربة، مصدر المياه، والظروف المناخية المحلية.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cloud-sun-rain"></i>
+                    </div>
+                    <h3>تخصيص بيانات مناخية</h3>
+                    <p>نقدم توصيات دقيقة للري والتسميد بناءً على البيانات المناخية المحدثة لمنطقتك في السودان.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <h3>استشارات مع خبراء</h3>
+                    <p>اتصل بخبراء زراعيين سودانيين عبر الفيديو للحصول على استشارات متخصصة ومدفوعة.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <h3>سوق مباشر</h3>
+                    <p>بيع محاصيلك مباشرة للتجار أو اشترِ مستلزمات الزراعة من الموردين عبر المنصة.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="section" id="how-it-works">
+        <div class="container">
+            <div class="section-title">
+                <h2>كيف تعمل المنصة</h2>
+                <p class="text-muted">خطوات بسيطة لتحقيق أقصى استفادة من خدمات رشّاد</p>
+            </div>
+            
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>أنشئ حسابك</h3>
+                    <p>سجّل كمزارع، مورد أو تاجر حسب احتياجاتك</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>أدخل بيانات أرضك</h3>
+                    <p>أدخل مساحة الأرض، نوع التربة، ومصدر المياه</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>احصل على خطة زراعية</h3>
+                    <p>تلقى خطة مخصصة للزراعة والري والتسميد</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>استشر أو تاجر</h3>
+                    <p>استشر الخبراء أو اعرض محاصيلك للبيع</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- User Types -->
+    <section class="section bg-light" id="user-types">
+        <div class="container">
+            <div class="section-title">
+                <h2>أنواع المستخدمين</h2>
+                <p class="text-muted">منصة رشّاد تخدم جميع أطراف العملية الزراعية</p>
+            </div>
+            
+            <div class="user-cards">
+                <div class="user-card">
+                    <h3>المزارع</h3>
+                    <p>احصل على خطط زراعية مخصصة، استشارات من خبراء، وقم ببيع محاصيلك مباشرة للتجار.</p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> خطط زراعية ذكية</li>
+                        <li><i class="fas fa-check"></i> توصيات ري وتسميد</li>
+                        <li><i class="fas fa-check"></i> اتصال بالخبراء</li>
+                        <li><i class="fas fa-check"></i> بيع المحاصيل مباشرة</li>
+                        <li><i class="fas fa-check"></i> توقعات الإنتاجية والأسعار</li>
+                    </ul>
+                </div>
+                
+                <div class="user-card">
+                    <h3>المورد</h3>
+                    <p>عرض منتجاتك الزراعية (بذور، أسمدة، معدات) وبيعها مباشرة للمزارعين والتجار.</p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> عرض المنتجات الزراعية</li>
+                        <li><i class="fas fa-check"></i> بيع مباشر للمزارعين</li>
+                        <li><i class="fas fa-check"></i> إدارة المخزون</li>
+                        <li><i class="fas fa-check"></i> دردشة مباشرة مع العملاء</li>
+                        <li><i class="fas fa-check"></i> تحديد مواقع التوصيل</li>
+                    </ul>
+                </div>
+                
+                <div class="user-card">
+                    <h3>التاجر</h3>
+                    <p>شراء المحاصيل مباشرة من المزارعين، وتتبع جودة المنتجات، وإدارة سلسلة التوريد.</p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> تصفح المحاصيل المتاحة</li>
+                        <li><i class="fas fa-check"></i> شراء مباشر من المزارعين</li>
+                        <li><i class="fas fa-check"></i> مفاوضات سعرية</li>
+                        <li><i class="fas fa-check"></i> تتبع جودة المنتجات</li>
+                        <li><i class="fas fa-check"></i> إدارة طلبات الشراء</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <a href="index.html" class="footer-logo">
+                        <i class="fas fa-seedling"></i>
+                        رشّاد<span class="accent">.</span>
+                    </a>
+                    <p>منصة استشارات زراعية ذكية تستخدم الذكاء الاصطناعي وتخصيص البيانات المناخية المحلية لخدمة القطاع الزراعي في السودان.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>روابط سريعة</h3>
+                    <ul class="footer-links">
+                        <li><a href="#home">الرئيسية</a></li>
+                        <li><a href="#features">المميزات</a></li>
+                        <li><a href="#how-it-works">كيف يعمل</a></li>
+                        <li><a href="#user-types">أنواع المستخدمين</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>حسابات المستخدمين</h3>
+                    <ul class="footer-links">
+                        <li><a href="login.html">تسجيل الدخول</a></li>
+                        <li><a href="register.html">إنشاء حساب</a></li>
+                        <li><a href="marketplace.html">السوق</a></li>
+                        <li><a href="expert-consultation.html">الاستشارات</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>اتصل بنا</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-phone"></i> +249 123 456 789</li>
+                        <li><i class="fas fa-envelope"></i> info@rashad.sd</li>
+                        <li><i class="fas fa-map-marker-alt"></i> الخرطوم، السودان</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>جميع الحقوق محفوظة &copy; <span class="current-year">2023</span> منصة رشّاد</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth-manager.js"></script>
+    <script src="script.js"></script>
+</body>
+  </html>
