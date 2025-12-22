@@ -678,26 +678,52 @@
     <script src="supabase-config.js"></script>
     <script src="auth-manager.js"></script>
     <script>
-        // Load user data from localStorage
-        document.addEventListener('DOMContentLoaded', function() {
-            const userData = JSON.parse(localStorage.getItem('rashadUser'));
+        // 1. إعدادات الاتصال بـ Supabase
+const SUPABASE_URL = 'https://ndnnqbhfhyexhkfdynti.supabase.co'; // استبدله برابط مشروعك
+const SUPABASE_ANON_KEY = 'anoneyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kbm5xYmhmaHlleGhrZmR5bnRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzODkyODMsImV4cCI6MjA4MTk2NTI4M30.zNZjtbN4h_2oevpMuLUYbyBigrIkJXzOWdOFFEJNeJM'; // استبدله بمفتاحك الخاص
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+document.addEventListener('DOMContentLoaded', async function() {
+    // جلب هوية المستخدم (بفرض أنك تحفظ الـ ID في localStorage أو عبر تسجيل الدخول)
+    // أو سنقوم بجلب آخر مستخدم مسجل في قاعدة البيانات كمثال
+    await loadUserDataFromSupabase();
+});
+
+async function loadUserDataFromSupabase() {
+    try {
+        // 2. جلب البيانات من جدول 'users' (تأكد من اسم الجدول في قاعدة بياناتك)
+        // سنفترض أننا نريد جلب بيانات مستخدم معين بناءً على إيميله أو معرفه
+        const { data: userData, error } = await _supabase
+            .from('users') // اسم الجدول في سوبابيس
+            .select('*')
+            .single(); // جلب سجل واحد فقط
+
+        if (error) throw error;
+
+        if (userData) {
+            // 3. تحديث واجهة المستخدم بالبيانات القادمة من Supabase
+            const userAvatar = document.querySelector('.user-avatar');
+            const userName = document.querySelector('.user-details h3');
+            const userLocation = document.querySelector('.user-details p');
             
-            if (userData) {
-                // Update user info in sidebar
-                const userAvatar = document.querySelector('.user-avatar');
-                const userName = document.querySelector('.user-details h3');
-                const userLocation = document.querySelector('.user-details p');
-                
-                userAvatar.textContent = userData.firstName.charAt(0);
-                userName.textContent = `${userData.firstName} ${userData.lastName}`;
-                userLocation.textContent = `مزارع - ${userData.state}`;
-            }
-        });
-        
-        // Handle notification click
-        document.querySelector('.notification-icon').addEventListener('click', function() {
-            alert('لديك 3 إشعارات جديدة:\n1. موعد الري غدًا\n2. عرض جديد من تاجر\n3. تحديث أسعار السوق');
-        });
+            // تحديث العناصر (تأكد من مطابقة أسماء الأعمدة في سوبابيس مثل first_name)
+            userAvatar.textContent = userData.first_name ? userData.first_name.charAt(0) : 'م';
+            userName.textContent = `${userData.first_name} ${userData.last_name}`;
+            userLocation.textContent = `مزارع - ${userData.state}`;
+            
+            console.log("تم تحميل البيانات من Supabase بنجاح");
+        }
+    } catch (err) {
+        console.error('خطأ في الاتصال بـ Supabase:', err.message);
+        // في حال فشل الاتصال، يمكن الرجوع لبيانات افتراضية أو localStorage
+    }
+}
+
+// معالج الإشعارات (يبقى كما هو أو يمكن ربطه بجدول الإشعارات لاحقاً)
+document.querySelector('.notification-icon').addEventListener('click', function() {
+    alert('لديك 3 إشعارات جديدة:\n1. موعد الري غدًا\n2. عرض جديد من تاجر\n3. تحديث أسعار السوق');
+});
+
     </script>
 </body>
 </html>
