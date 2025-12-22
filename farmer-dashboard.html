@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة المزارع - رشّاد</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-page">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <i class="fas fa-seedling"></i>
+                <span>رشّاد<span class="accent">.</span></span>
+            </div>
+            
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">م</div>
+                <div>
+                    <div class="user-name" id="userName">محمد أحمد</div>
+                    <div class="user-type" id="userType">مزارع</div>
+                </div>
+            </div>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li><a href="farmer-dashboard.html" class="active"><i class="fas fa-home"></i> الرئيسية</a></li>
+            <li><a href="#"><i class="fas fa-seedling"></i> إدارة المحاصيل</a></li>
+            <li><a href="#"><i class="fas fa-tint"></i> برنامج الري</a></li>
+            <li><a href="#"><i class="fas fa-leaf"></i> التسميد</a></li>
+            <li><a href="marketplace.html"><i class="fas fa-store"></i> السوق</a></li>
+            <li><a href="#"><i class="fas fa-shopping-cart"></i> عروضي</a></li>
+            <li><a href="expert-consultation.html"><i class="fas fa-video"></i> الاستشارات</a></li>
+            <li><a href="#"><i class="fas fa-chart-line"></i> التقارير</a></li>
+            <li><a href="#"><i class="fas fa-cog"></i> الإعدادات</a></li>
+            <li><a href="index.html" onclick="logout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="page-title">
+                <h1>لوحة تحكم المزارع</h1>
+                <p id="welcomeMessage">مرحباً بعودتك!</p>
+            </div>
+            
+            <div class="top-bar-actions">
+                <div class="notification-icon">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </div>
+                <button class="btn btn-primary" onclick="addNewCrop()">
+                    <i class="fas fa-plus"></i> إضافة محصول جديد
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="activePlans">0</div>
+                    <div class="stat-label">خطة زراعية نشطة</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-boxes"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="activeProducts">0</div>
+                    <div class="stat-label">منتج معروض</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="monthlyRevenue">0</div>
+                    <div class="stat-label">جنيه (إيرادات الشهر)</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="growthRate">+0%</div>
+                    <div class="stat-label">معدل النمو</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="content-grid">
+            <!-- Farming Plans -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-calendar-alt"></i> خططي الزراعية</h2>
+                    <a href="#" class="btn btn-outline btn-sm">عرض الكل</a>
+                </div>
+                <div id="farmingPlans" class="card-body">
+                    <div class="loading">جاري تحميل الخطط الزراعية...</div>
+                </div>
+            </div>
+            
+            <!-- Weather -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-cloud-sun"></i> الطقس اليوم</h2>
+                    <span class="text-muted" id="weatherLocation">الجزيرة</span>
+                </div>
+                <div id="weatherInfo" class="card-body">
+                    <div class="loading">جاري تحميل بيانات الطقس...</div>
+                </div>
+            </div>
+            
+            <!-- Recent Orders -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-shopping-cart"></i> طلبات حديثة</h2>
+                    <a href="#" class="btn btn-outline btn-sm">عرض الكل</a>
+                </div>
+                <div id="recentOrders" class="card-body">
+                    <div class="loading">جاري تحميل الطلبات...</div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-bolt"></i> إجراءات سريعة</h2>
+                </div>
+                <div class="card-body">
+                    <div class="quick-actions">
+                        <button class="quick-action-btn" onclick="window.location.href='marketplace.html'">
+                            <i class="fas fa-store"></i>
+                            <span>عرض منتجاتي</span>
+                        </button>
+                        
+                        <button class="quick-action-btn" onclick="window.location.href='expert-consultation.html'">
+                            <i class="fas fa-video"></i>
+                            <span>استشارة خبير</span>
+                        </button>
+                        
+                        <button class="quick-action-btn" onclick="addNewCrop()">
+                            <i class="fas fa-plus"></i>
+                            <span>إضافة محصول</span>
+                        </button>
+                        
+                        <button class="quick-action-btn" onclick="checkIrrigation()">
+                            <i class="fas fa-tint"></i>
+                            <span>برنامج الري</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Market Prices -->
+            <div class="content-card wide">
+                <div class="card-header">
+                    <h2><i class="fas fa-chart-line"></i> أسعار السوق</h2>
+                    <span class="text-muted">آخر تحديث: اليوم</span>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>المحصول</th>
+                                <th>السعر الحالي</th>
+                                <th>التغير</th>
+                                <th>أعلى سعر</th>
+                                <th>أقل سعر</th>
+                            </tr>
+                        </thead>
+                        <tbody id="marketPrices">
+                            <tr>
+                                <td colspan="5" class="text-center">جاري تحميل أسعار السوق...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Notifications -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-bell"></i> إشعارات</h2>
+                </div>
+                <div class="card-body">
+                    <div class="notifications-list">
+                        <div class="notification-item unread">
+                            <i class="fas fa-tint notification-icon"></i>
+                            <div>
+                                <p>موعد الري القادم: غداً 8:00 صباحاً</p>
+                                <small class="text-muted">منذ 2 ساعة</small>
+                            </div>
+                        </div>
+                        
+                        <div class="notification-item">
+                            <i class="fas fa-shopping-cart notification-icon"></i>
+                            <div>
+                                <p>طلب جديد على محصول القمح</p>
+                                <small class="text-muted">منذ يوم</small>
+                            </div>
+                        </div>
+                        
+                        <div class="notification-item">
+                            <i class="fas fa-cloud-sun-rain notification-icon"></i>
+                            <div>
+                                <p>تحديث توقعات الطقس للأسبوع القادم</p>
+                                <small class="text-muted">منذ 3 أيام</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth-manager.js"></script>
+    <script src="script.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', async function() {
+        // التحقق من المصادقة
+        await window.authManager.checkAuthState();
+        
+        if (!window.authManager.isAuthenticated()) {
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        const user = window.authManager.getProfile();
+        
+        // التحقق من نوع المستخدم
+        if (user.user_type !== 'farmer') {
+            window.location.href = 'index.html';
+            return;
+        }
+        
+        // تحديث معلومات المستخدم
+        updateUserInfo(user);
+        
+        // تحميل بيانات لوحة التحكم
+        await loadFarmerDashboardData();
+        
+        // تحميل أسعار السوق
+        await loadMarketPrices();
+    });
+    
+    function updateUserInfo(user) {
+        document.getElementById('userAvatar').textContent = user.first_name?.charAt(0) || 'م';
+        document.getElementById('userName').textContent = `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'مستخدم';
+        document.getElementById('userType').textContent = 'مزارع';
+        document.getElementById('welcomeMessage').textContent = `مرحباً ${user.first_name || 'مستخدم'}!`;
+        document.getElementById('weatherLocation').textContent = user.state || 'الخرطوم';
+    }
+    
+    async function loadMarketPrices() {
+        // بيانات أسعار السوق الافتراضية
+        const prices = [
+            { crop: 'قمح', current: '1,500', change: '+2.5%', high: '1,550', low: '1,450' },
+            { crop: 'ذرة', current: '1,200', change: '-1.2%', high: '1,250', low: '1,150' },
+            { crop: 'فول سوداني', current: '2,000', change: '+3.8%', high: '2,100', low: '1,950' },
+            { crop: 'سمسم', current: '3,000', change: '0.0%', high: '3,050', low: '2,950' },
+            { crop: 'قطن', current: '4,500', change: '+1.5%', high: '4,600', low: '4,400' }
+        ];
+        
+        const tableBody = document.getElementById('marketPrices');
+        tableBody.innerHTML = prices.map(price => `
+            <tr>
+                <td>${price.crop}</td>
+                <td>${price.current} ج.س/طن</td>
+                <td class="${price.change.includes('+') ? 'text-success' : price.change.includes('-') ? 'text-error' : ''}">
+                    ${price.change}
+                </td>
+                <td>${price.high} ج.س</td>
+                <td>${price.low} ج.س</td>
+            </tr>
+        `).join('');
+    }
+    
+    function addNewCrop() {
+        alert('ميزة إضافة محصول جديد قيد التطوير. سيتم تفعيلها قريباً.');
+    }
+    
+    function checkIrrigation() {
+        alert('ميزة برنامج الري قيد التطوير. سيتم تفعيلها قريباً.');
+    }
+    
+    function logout() {
+        event.preventDefault();
+        window.authManager.logout();
+    }
+    </script>
+    <style>
+    .dashboard-page {
+        display: flex;
+        min-height: 100vh;
+        background: var(--gray-light);
+    }
+    
+    .sidebar {
+        width: 250px;
+        background: var(--dark-color);
+        color: white;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .sidebar-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .sidebar-logo {
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .sidebar-menu {
+        list-style: none;
+        flex: 1;
+        padding: 1rem 0;
+    }
+    
+    .sidebar-menu li {
+        margin-bottom: 0.25rem;
+    }
+    
+    .sidebar-menu a {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1.5rem;
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        transition: var(--transition);
+    }
+    
+    .sidebar-menu a:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+    
+    .sidebar-menu a.active {
+        background: var(--primary-color);
+        color: white;
+        border-right: 4px solid var(--accent-color);
+    }
+    
+    .main-content {
+        flex: 1;
+        padding: 1rem;
+        overflow-y: auto;
+    }
+    
+    .top-bar {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: var(--shadow-light);
+    }
+    
+    .page-title h1 {
+        margin-bottom: 0.25rem;
+    }
+    
+    .notification-icon {
+        position: relative;
+        font-size: 1.25rem;
+        color: var(--gray-dark);
+        cursor: pointer;
+    }
+    
+    .notification-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: var(--accent-color);
+        color: white;
+        font-size: 0.75rem;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: var(--shadow-light);
+    }
+    
+    .stat-icon {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--dark-color);
+    }
+    
+    .stat-label {
+        color: var(--gray-dark);
+        font-size: 0.875rem;
+    }
+    
+    .content-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .content-card {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-light);
+    }
+    
+    .content-card.wide {
+        grid-column: span 2;
+    }
+    
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--gray-medium);
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .quick-action-btn {
+        background: var(--light-color);
+        border: none;
+        border-radius: var(--border-radius);
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    
+    .quick-action-btn:hover {
+        background: var(--primary-color);
+        color: white;
+    }
+    
+    .quick-action-btn i {
+        font-size: 1.5rem;
+    }
+    
+    .notifications-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .notification-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 0.75rem;
+        border-radius: var(--border-radius);
+        background: var(--light-color);
+    }
+    
+    .notification-item.unread {
+        background: #e3f2fd;
+        border-right: 3px solid var(--info-color);
+    }
+    
+    .notification-icon {
+        color: var(--primary-color);
+        margin-top: 0.25rem;
+    }
+    
+    @media (max-width: 992px) {
+        .dashboard-page {
+            flex-direction: column;
+        }
+        
+        .sidebar {
+            width: 100%;
+            height: auto;
+        }
+        
+        .sidebar-menu {
+            display: flex;
+            overflow-x: auto;
+            padding: 0.5rem;
+        }
+        
+        .sidebar-menu li {
+            margin-bottom: 0;
+            flex-shrink: 0;
+        }
+        
+        .content-card.wide {
+            grid-column: span 1;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .quick-actions {
+            grid-template-columns: 1fr;
+        }
+        
+        .top-bar {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+    }
+    </style>
+</body>
+</html>
