@@ -1,5 +1,5 @@
 // supabase-config.js - تكوين Supabase للاتصال بقاعدة البيانات
-
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 // استبدل هذه القيم بمعلومات مشروعك في Supabase
 const SUPABASE_URL = 'https://jmkrmtnyjskycobmjwuc.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impta3JtdG55anNreWNvYm1qd3VjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY0NzU1NTcsImV4cCI6MjA4MjA1MTU1N30.4by-0LvK89mKdSVkYrdQBP2SmV-dkykXbRrlHayeQuU';
